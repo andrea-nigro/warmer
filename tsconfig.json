@@ -7,7 +7,8 @@
       "dom"
     ],
     "allowImportingTsExtensions": true,
-    "noEmit": true,
+    "noEmit": false,
+    "outDir": "./dist",
     "moduleResolution": "nodenext",
     "declaration": true,
     "esModuleInterop": true,

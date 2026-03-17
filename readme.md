@@ -16,10 +16,17 @@ npm install
 
 ## Utilizzo
 
-Lo script può essere lanciato tramite terminale utilizzando `npx ts-node`:
+Lo script può essere lanciato da qualsiasi macchina senza installazione manuale tramite `npx` direttamente da GitHub:
 
 ```bash
-npx ts-node index.ts [opzioni]
+npx github:andrea-nigro/warmer [opzioni]
+```
+
+In alternativa, se hai già clonato il repository localmente:
+
+```bash
+npm install
+npx . [opzioni]
 ```
 
 ### Parametri Disponibili
@@ -41,44 +48,44 @@ npx ts-node index.ts [opzioni]
 Crea un file (es. `urls.txt`) con un URL per riga. Le righe che iniziano con `#` o le righe vuote verranno ignorate.
 
 ```bash
-npx ts-node index.ts --list urls.txt
+npx github:andrea-nigro/warmer --list urls.txt
 ```
 
 ### 2. Warming da una Sitemap XML
 Recupera tutti gli URL definiti in una sitemap (anche se è un indice di sitemap che punta ad altre sitemap).
 
 ```bash
-npx ts-node index.ts --sitemapxml https://www.example.com/sitemap.xml
+npx github:andrea-nigro/warmer --sitemapxml https://www.example.com/sitemap.xml
 ```
 
 ### 3. Configurazione avanzata (Concorrenza e Timeout)
 Esegue 10 richieste contemporanee con un timeout di 5 secondi:
 
 ```bash
-npx ts-node index.ts --sitemapxml https://www.example.com/sitemap.xml --concurrency 10 --timeout 5000
+npx github:andrea-nigro/warmer --sitemapxml https://www.example.com/sitemap.xml --concurrency 10 --timeout 5000
 ```
 
 ### 4. Utilizzo di un metodo HTTP differente
 Se vuoi solo testare la raggiungibilità senza scaricare il corpo della pagina (se il server lo supporta):
 
 ```bash
-npx ts-node index.ts --list urls.txt --method HEAD
+npx github:andrea-nigro/warmer --list urls.txt --method HEAD
 ```
 
 ### 5. Combinazione di file e sitemap
 ```bash
-npx ts-node index.ts --list urls.txt --sitemapxml https://www.example.com/sitemap.xml --concurrency 20
+npx github:andrea-nigro/warmer --list urls.txt --sitemapxml https://www.example.com/sitemap.xml --concurrency 20
 ```
 
 ### 6. Sitemap XML Ricorsive (più lingue)
 Recupera le URL da uno o più indici di sitemap XML (utile per gestire più lingue o indici complessi).
 
 ```bash
-npx ts-node index.ts --sitemapxml-recursive https://example.com/sitemap_it.xml https://example.com/sitemap_en.xml --concurrency 10
+npx github:andrea-nigro/warmer --sitemapxml-recursive https://example.com/sitemap_it.xml https://example.com/sitemap_en.xml --concurrency 10
 ```
 
 ```bash
-npx ts-node index.ts \
+npx github:andrea-nigro/warmer \
   --sitemapxml-recursive https://www.sdabocconi.it/it/sitemap.xml https://www.sdabocconi.it/en/sitemap.xml \
   --concurrency 10
 ```

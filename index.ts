@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
 import * as xml2js from 'xml2js';
@@ -6,7 +7,7 @@ import * as xml2js from 'xml2js';
  * Script Node.js in TypeScript per richiamare pagine web da una lista o da una sitemap XML.
  * 
  * Utilizzo:
- * npx ts-node warmer/index.ts [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1,sitemap_url2,...>] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>]
+ * npx github:andrea-nigro/warmer [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1,sitemap_url2,...>] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>]
  */
 
 async function fetchSitemapUrls(sitemapUrl: string, timeoutMs: number): Promise<string[]> {
@@ -87,10 +88,10 @@ async function main() {
     const methodStr = getArgValue('--method');
 
     if (!filePath && !sitemapUrl && sitemapRecursiveUrls.length === 0) {
-        console.log('Utilizzo: npx ts-node warmer/index.ts [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1> <sitemap_url2> ...] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>]');
-        console.log('Esempio file: npx ts-node warmer/index.ts --list urls.txt --concurrency 5');
-        console.log('Esempio sitemap: npx ts-node warmer/index.ts --sitemapxml https://example.com/sitemap.xml --concurrency 10');
-        console.log('Esempio sitemap ricorsiva: npx ts-node warmer/index.ts --sitemapxml-recursive https://example.com/sitemap_index.xml --concurrency 10');
+        console.log('Utilizzo: npx github:andrea-nigro/warmer [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1> <sitemap_url2> ...] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>]');
+        console.log('Esempio file: npx github:andrea-nigro/warmer --list urls.txt --concurrency 5');
+        console.log('Esempio sitemap: npx github:andrea-nigro/warmer --sitemapxml https://example.com/sitemap.xml --concurrency 10');
+        console.log('Esempio sitemap ricorsiva: npx github:andrea-nigro/warmer --sitemapxml-recursive https://example.com/sitemap_index.xml --concurrency 10');
         process.exit(1);
     }
 
