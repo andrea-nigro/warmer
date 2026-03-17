@@ -87,12 +87,20 @@ async function main() {
     const timeoutStr = getArgValue('--timeout');
     const methodStr = getArgValue('--method');
 
-    if (!filePath && !sitemapUrl && sitemapRecursiveUrls.length === 0) {
+    if (args.includes('--help') || args.includes('-h') || (!filePath && !sitemapUrl && sitemapRecursiveUrls.length === 0)) {
         console.log('Utilizzo: npx github:andrea-nigro/warmer [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1> <sitemap_url2> ...] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>]');
-        console.log('Esempio file: npx github:andrea-nigro/warmer --list urls.txt --concurrency 5');
-        console.log('Esempio sitemap: npx github:andrea-nigro/warmer --sitemapxml https://example.com/sitemap.xml --concurrency 10');
-        console.log('Esempio sitemap ricorsiva: npx github:andrea-nigro/warmer --sitemapxml-recursive https://example.com/sitemap_index.xml --concurrency 10');
-        process.exit(1);
+        console.log('\nParametri:');
+        console.log('  --list <file>               File di testo con lista di URL (uno per riga)');
+        console.log('  --sitemapxml <url>          URL di una sitemap XML');
+        console.log('  --sitemapxml-recursive <urls> Uno o più URL di sitemap (anche indici) separati da spazio');
+        console.log('  --concurrency <n>           Numero di richieste simultanee (default: 5)');
+        console.log('  --timeout <ms>              Timeout per singola richiesta in ms (default: 10000)');
+        console.log('  --method <GET|HEAD|...>     Metodo HTTP da usare (default: GET)');
+        console.log('\nEsempi:');
+        console.log('  npx github:andrea-nigro/warmer --list urls.txt --concurrency 5');
+        console.log('  npx github:andrea-nigro/warmer --sitemapxml https://example.com/sitemap.xml');
+        console.log('  npx github:andrea-nigro/warmer --sitemapxml-recursive https://example.com/s1.xml https://example.com/s2.xml');
+        process.exit(0);
     }
 
     const concurrency = parseInt(concurrencyStr || '5', 10);
@@ -134,9 +142,14 @@ async function main() {
     }
 
     const outputFileName = `warmer_results_${new Date().toISOString().replace(/[:.]/g, '-')}.log`;
-    const outputDir = path.resolve(process.cwd(), 'output');
+    const outputDir = path.resolve(process.cwd(), 'warmer');
     if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+        try {
+            fs.mkdirSync(outputDir, { recursive: true });
+        } catch (err: any) {
+            console.error(`Errore: Impossibile creare la cartella di output "${outputDir}": ${err.message}`);
+            process.exit(1);
+        }
     }
     const outputPath = path.resolve(outputDir, outputFileName);
     const outputStream = fs.createWriteStream(outputPath);

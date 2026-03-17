@@ -4,8 +4,8 @@ const { resolve } = require('path');
 
 // Registra ts-node per caricare file .ts al volo
 register({
-  esm: true,
-  project: resolve(__dirname, '../tsconfig.json')
+  project: resolve(__dirname, '../tsconfig.json'),
+  transpileOnly: true
 });
 
 // Carica il file principale
