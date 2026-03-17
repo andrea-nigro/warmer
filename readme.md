@@ -78,7 +78,9 @@ npx ts-node index.ts --sitemapxml-recursive https://example.com/sitemap_it.xml h
 ```
 
 ```bash
-npx ts-node index.ts --sitemapxml-recursive https://www.sdabocconi.it/it/sitemap.xml https://www.sdabocconi.it/en/sitemap.xml --concurrency 10
+npx ts-node index.ts \
+  --sitemapxml-recursive https://www.sdabocconi.it/it/sitemap.xml https://www.sdabocconi.it/en/sitemap.xml \
+  --concurrency 10
 ```
 
 ## Output dei Risultati
