@@ -1,0 +1,28 @@
+{
+  "name": "warmer",
+  "version": "1.0.0",
+  "description": "Questo script Node.js in TypeScript è progettato per effettuare il \"warming\" (riscaldamento) delle cache di un sito web, richiamando in parallelo una lista di URL ottenuti da un file di testo o da una Sitemap XML.",
+  "homepage": "https://github.com/andrea-nigro/warmer#readme",
+  "bugs": {
+    "url": "https://github.com/andrea-nigro/warmer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrea-nigro/warmer.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "undici-types": "^7.18.2",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/xml2js": "^0.4.14"
+  }
+}
