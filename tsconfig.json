@@ -6,11 +6,10 @@
       "es2020",
       "dom"
     ],
-    "allowImportingTsExtensions": true,
     "noEmit": false,
     "outDir": "./dist",
     "moduleResolution": "nodenext",
-    "declaration": true,
+    "declaration": false,
     "esModuleInterop": true,
     "strict": true,
     "noImplicitAny": true,

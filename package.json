@@ -24,6 +24,7 @@
   "dependencies": {
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
+    "undici": "^7.24.5",
     "undici-types": "^7.18.2",
     "xml2js": "^0.6.2"
   },

@@ -2,20 +2,30 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as xml2js from 'xml2js';
+import { Agent, setGlobalDispatcher } from 'undici';
 
 /**
  * Script Node.js in TypeScript per richiamare pagine web da una lista o da una sitemap XML.
  * 
  * Utilizzo:
- * npx github:andrea-nigro/warmer [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1,sitemap_url2,...>] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>]
+ * npx github:andrea-nigro/warmer [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1,sitemap_url2,...>] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>] [--insecure]
  */
 
-async function fetchSitemapUrls(sitemapUrl: string, timeoutMs: number): Promise<string[]> {
+async function fetchSitemapUrls(sitemapUrl: string, timeoutMs: number, insecure: boolean = false): Promise<string[]> {
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-        const response = await fetch(sitemapUrl, { signal: controller.signal });
+        const fetchOptions: any = { signal: controller.signal };
+        if (insecure) {
+            fetchOptions.dispatcher = new Agent({
+                connect: {
+                    rejectUnauthorized: false
+                }
+            });
+        }
+
+        const response = await fetch(sitemapUrl, fetchOptions);
         clearTimeout(timeoutId);
 
         if (!response.ok) {
@@ -39,7 +49,7 @@ async function fetchSitemapUrls(sitemapUrl: string, timeoutMs: number): Promise<
             console.log('Rilevato indice di sitemap. Estrazione sitemap figlie...');
             for (const entry of result.sitemapindex.sitemap) {
                 if (entry.loc && entry.loc[0]) {
-                    const subUrls = await fetchSitemapUrls(entry.loc[0].trim(), timeoutMs);
+                    const subUrls = await fetchSitemapUrls(entry.loc[0].trim(), timeoutMs, insecure);
                     urls.push(...subUrls);
                 }
             }
@@ -86,9 +96,10 @@ async function main() {
     const concurrencyStr = getArgValue('--concurrency');
     const timeoutStr = getArgValue('--timeout');
     const methodStr = getArgValue('--method');
+    const insecure = args.includes('--insecure');
 
     if (args.includes('--help') || args.includes('-h') || (!filePath && !sitemapUrl && sitemapRecursiveUrls.length === 0)) {
-        console.log('Utilizzo: npx github:andrea-nigro/warmer [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1> <sitemap_url2> ...] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>]');
+        console.log('Utilizzo: npx github:andrea-nigro/warmer [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1> <sitemap_url2> ...] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>] [--insecure]');
         console.log('\nParametri:');
         console.log('  --list <file>               File di testo con lista di URL (uno per riga)');
         console.log('  --sitemapxml <url>          URL di una sitemap XML');
@@ -96,6 +107,7 @@ async function main() {
         console.log('  --concurrency <n>           Numero di richieste simultanee (default: 5)');
         console.log('  --timeout <ms>              Timeout per singola richiesta in ms (default: 10000)');
         console.log('  --method <GET|HEAD|...>     Metodo HTTP da usare (default: GET)');
+        console.log('  --insecure                  Disabilita il controllo dei certificati SSL');
         console.log('\nEsempi:');
         console.log('  npx github:andrea-nigro/warmer --list urls.txt --concurrency 5');
         console.log('  npx github:andrea-nigro/warmer --sitemapxml https://example.com/sitemap.xml');
@@ -123,13 +135,13 @@ async function main() {
 
     if (sitemapUrl) {
         console.log(`Recupero URL dalla sitemap: ${sitemapUrl}...`);
-        const sitemapUrls = await fetchSitemapUrls(sitemapUrl, timeoutMs);
+        const sitemapUrls = await fetchSitemapUrls(sitemapUrl, timeoutMs, insecure);
         urls.push(...sitemapUrls);
     }
 
     for (const sUrl of sitemapRecursiveUrls) {
         console.log(`Recupero ricorsivo URL dalla sitemap: ${sUrl}...`);
-        const sitemapUrls = await fetchSitemapUrls(sUrl, timeoutMs);
+        const sitemapUrls = await fetchSitemapUrls(sUrl, timeoutMs, insecure);
         urls.push(...sitemapUrls);
     }
 
@@ -155,7 +167,7 @@ async function main() {
     const outputStream = fs.createWriteStream(outputPath);
 
     console.log(`Inizio warming di ${urls.length} URL...`);
-    console.log(`Configurazione: Concorrenza=${concurrency}, Timeout=${timeoutMs}ms, Metodo=${method}`);
+    console.log(`Configurazione: Concorrenza=${concurrency}, Timeout=${timeoutMs}ms, Metodo=${method}, Insecure=${insecure}`);
     console.log(`Output in: ${outputPath}\n`);
 
     let currentIndex = 0;
@@ -166,6 +178,12 @@ async function main() {
     const startTimeOverall = performance.now();
 
     const runWorker = async () => {
+        const agent = insecure ? new Agent({
+            connect: {
+                rejectUnauthorized: false
+            }
+        }) : undefined;
+
         while (currentIndex < urls.length) {
             const urlIndex = currentIndex++;
             const url = urls[urlIndex];
@@ -175,10 +193,15 @@ async function main() {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-                const response = await fetch(url, {
+                const fetchOptions: any = {
                     method: method,
                     signal: controller.signal
-                });
+                };
+                if (agent) {
+                    fetchOptions.dispatcher = agent;
+                }
+
+                const response = await fetch(url, fetchOptions);
                 
                 clearTimeout(timeoutId);
                 const endTime = performance.now();

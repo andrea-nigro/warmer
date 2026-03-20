@@ -39,6 +39,7 @@ npx . [opzioni]
 | `--concurrency` | Numero di richieste HTTP contemporanee. | `5` |
 | `--timeout` | Tempo massimo di attesa per ogni richiesta (in millisecondi). | `10000` (10s) |
 | `--method` | Metodo HTTP da utilizzare per le richieste (GET, POST, HEAD, ecc.). | `GET` |
+| `--insecure` | Disabilita il controllo dei certificati SSL (utile per ambienti di test con certificati self-signed). | `false` |
 
 **Nota:** È obbligatorio fornire almeno uno tra `--list`, `--sitemapxml` o `--sitemapxml-recursive`. Se vengono forniti più parametri, gli URL verranno uniti e i duplicati rimossi automaticamente.
 
@@ -88,6 +89,13 @@ npx github:andrea-nigro/warmer --sitemapxml-recursive https://example.com/sitema
 npx github:andrea-nigro/warmer \
   --sitemapxml-recursive https://www.sdabocconi.it/it/sitemap.xml https://www.sdabocconi.it/en/sitemap.xml \
   --concurrency 10
+```
+
+### 7. Gestione certificati SSL non validi (Insecure)
+Se il sito utilizza certificati self-signed o non validi (es. in ambienti di staging), puoi usare il flag `--insecure` per ignorare gli errori SSL:
+
+```bash
+npx github:andrea-nigro/warmer --sitemapxml https://staging.example.com/sitemap.xml --insecure
 ```
 
 ## Output dei Risultati
