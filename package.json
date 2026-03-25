@@ -12,14 +12,15 @@
   },
   "license": "ISC",
   "bin": {
-    "warmer": "bin/warmer.js"
+    "warmer": "bin/index.js"
   },
   "author": "",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "dist": "tsc --outDir bin"
   },
   "dependencies": {
     "ts-node": "^10.9.2",

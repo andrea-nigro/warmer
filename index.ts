@@ -93,17 +93,19 @@ async function main() {
     const filePath = getArgValue('--list');
     const sitemapUrl = getArgValue('--sitemapxml');
     const sitemapRecursiveUrls = getArgValues('--sitemapxml-recursive');
+    const replaceHostname = getArgValue('--replace-hostname');
     const concurrencyStr = getArgValue('--concurrency');
     const timeoutStr = getArgValue('--timeout');
     const methodStr = getArgValue('--method');
     const insecure = args.includes('--insecure');
 
     if (args.includes('--help') || args.includes('-h') || (!filePath && !sitemapUrl && sitemapRecursiveUrls.length === 0)) {
-        console.log('Utilizzo: npx github:andrea-nigro/warmer [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1> <sitemap_url2> ...] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>] [--insecure]');
+        console.log('Utilizzo: npx github:andrea-nigro/warmer [--list <file_url>] [--sitemapxml <sitemap_url>] [--sitemapxml-recursive <sitemap_url1> <sitemap_url2> ...] [--replace-hostname <new_hostname>] [--concurrency <n>] [--timeout <ms>] [--method <GET|POST|...>] [--insecure]');
         console.log('\nParametri:');
         console.log('  --list <file>               File di testo con lista di URL (uno per riga)');
         console.log('  --sitemapxml <url>          URL di una sitemap XML');
         console.log('  --sitemapxml-recursive <urls> Uno o più URL di sitemap (anche indici) separati da spazio');
+        console.log('  --replace-hostname <host>   Sostituisce l\'hostname negli URL (es: staging.example.com)');
         console.log('  --concurrency <n>           Numero di richieste simultanee (default: 5)');
         console.log('  --timeout <ms>              Timeout per singola richiesta in ms (default: 10000)');
         console.log('  --method <GET|HEAD|...>     Metodo HTTP da usare (default: GET)');
@@ -147,6 +149,20 @@ async function main() {
 
     // Rimuovi duplicati se presenti
     urls = [...new Set(urls)];
+
+    // Sostituzione hostname se richiesto
+    if (replaceHostname) {
+        console.log(`Sostituzione hostname con: ${replaceHostname}...`);
+        urls = urls.map(u => {
+            try {
+                const parsedUrl = new URL(u);
+                parsedUrl.hostname = replaceHostname;
+                return parsedUrl.toString();
+            } catch (e) {
+                return u; // Se non è un URL valido, lascia così com'è
+            }
+        });
+    }
 
     if (urls.length === 0) {
         console.log('Nessun URL trovato da processare.');
